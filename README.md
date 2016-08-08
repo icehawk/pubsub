@@ -9,3 +9,106 @@
 
 Publish subscribe component for IceHawk framework
 
+## Usage
+
+### Create a message
+
+**Please note:** Messages should always be immutable.
+
+```php
+<?php
+
+namespace MyVendor\MyNamespace;
+
+use IceHawk\PubSub\Interfaces\CarriesInformation;
+use IceHawk\PubSub\Types\Channel;
+use IceHawk\PubSub\Types\MessageId;
+
+final class MyMessage implements CarriesInformation
+{
+	/** @var MessageId */
+	private $messageId;
+	
+	/** @var string */
+	private $message;
+	
+	public function __construct(MessageId $messageId, string $message) 
+	{
+		$this->messageId = $messageId;
+		$this->message = $message;
+	}
+	
+	public function getMessageId() : MessageId 
+	{
+		return $this->messageId;
+	}
+	
+	public function getChannel() : Channel 
+	{
+		return new Channel('ListenToMe');
+	}
+	
+	public function getMessage() : string
+	{
+		return $this->message;
+	}
+}
+```
+
+### Create a message subscriber
+
+```php
+<?php
+
+namespace MyVendor\MyNamespace;
+
+use IceHawk\PubSub\AbstractMessageSubscriber;
+
+final class MyMessageSubscriber extends AbstractMessageSubscriber
+{
+	protected function onMyMessage(MyMessage $myMessage)
+	{
+		echo $myMessage->getMessage();
+	}
+}
+```
+
+### Subscribe to messages
+
+```php
+<?php
+
+namespace MyVendor\MyNamespace;
+
+use IceHawk\PubSub\MessageBus;
+use IceHawk\PubSub\Types\Channel;
+
+// ...
+
+$messageBus = new MessageBus();
+$messageBus->subscribe(new Channel('ListenToMe'), new MyMessageSubscriber());
+
+```
+
+### Publish a message
+
+```php
+<?php
+
+namespace MyVendor\MyNamespace;
+
+use IceHawk\PubSub\Types\MessageId;
+
+// ...
+
+$message = new MyMessage(new MessageId('Identifier'), 'Hello World!');
+
+$messageBus->publish($message);
+
+```
+
+**Prints:**
+
+```
+Hello World!
+```
