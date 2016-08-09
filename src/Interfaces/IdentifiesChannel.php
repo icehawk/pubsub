@@ -6,10 +6,9 @@
 namespace IceHawk\PubSub\Interfaces;
 
 /**
- * Interface DispatchesMessages
+ * Interface IdentifiesChannel
  * @package IceHawk\PubSub\Interfaces
  */
-interface DispatchesMessages extends PublishesMessages, RegistersChannelSubscribers
+interface IdentifiesChannel extends RepresentsValueAsString
 {
-
 }

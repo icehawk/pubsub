@@ -13,7 +13,13 @@ Publish subscribe component for IceHawk framework
 
 ### Create a message
 
-**Please note:** Messages should always be immutable.
+**Please note:** 
+
+* Messages should always be immutable.
+* Every message must have a:
+  * Message ID
+  * Message name
+  * Channel
 
 ```php
 <?php
@@ -21,8 +27,12 @@ Publish subscribe component for IceHawk framework
 namespace MyVendor\MyNamespace;
 
 use IceHawk\PubSub\Interfaces\CarriesInformation;
+use IceHawk\PubSub\Interfaces\IdentifiesChannel;
+use IceHawk\PubSub\Interfaces\IdentifiesMessage;
+use IceHawk\PubSub\Interfaces\NamesMessage;
 use IceHawk\PubSub\Types\Channel;
 use IceHawk\PubSub\Types\MessageId;
+use IceHawk\PubSub\Types\MessageName;
 
 final class MyMessage implements CarriesInformation
 {
@@ -38,12 +48,17 @@ final class MyMessage implements CarriesInformation
 		$this->message = $message;
 	}
 	
-	public function getMessageId() : MessageId 
+	public function getMessageId() : IdentifiesMessage 
 	{
 		return $this->messageId;
 	}
 	
-	public function getChannel() : Channel 
+	public function getMessageName() : NamesMessage 
+	{
+        return new MessageName('Something happened');
+	}
+	
+	public function getChannel() : IdentifiesChannel 
 	{
 		return new Channel('ListenToMe');
 	}
@@ -57,16 +72,22 @@ final class MyMessage implements CarriesInformation
 
 ### Create a message subscriber
 
+**Note:** The `AbstractChannelSubscriber` automatically converts the message name to a method name by prefixing `when` to the message name, that is converted to upper camel case.
+In this example: Message name "Something happened" becomes method name "whenSomethingHappened".
+
+As the call to the method is triggered by the abstract parent class, the method must at least have protected (or public) visibility. 
+Private methods would not be callable, because they would be out of scope.
+
 ```php
 <?php
 
 namespace MyVendor\MyNamespace;
 
-use IceHawk\PubSub\AbstractMessageSubscriber;
+use IceHawk\PubSub\AbstractChannelSubscriber;
 
-final class MyMessageSubscriber extends AbstractMessageSubscriber
+final class MyMessageSubscriber extends AbstractChannelSubscriber
 {
-	protected function onMyMessage(MyMessage $myMessage)
+	protected function whenSomethingHappened(MyMessage $myMessage)
 	{
 		echo $myMessage->getMessage();
 	}

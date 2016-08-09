@@ -7,8 +7,8 @@ namespace IceHawk\PubSub;
 
 use IceHawk\PubSub\Interfaces\CarriesInformation;
 use IceHawk\PubSub\Interfaces\DispatchesMessages;
-use IceHawk\PubSub\Interfaces\SubscribesToMessages;
-use IceHawk\PubSub\Types\Channel;
+use IceHawk\PubSub\Interfaces\IdentifiesChannel;
+use IceHawk\PubSub\Interfaces\SubscribesToChannel;
 
 /**
  * Class MessageBus
@@ -16,7 +16,7 @@ use IceHawk\PubSub\Types\Channel;
  */
 final class MessageBus implements DispatchesMessages
 {
-	/** @var array|SubscribesToMessages[][] */
+	/** @var array|SubscribesToChannel[][] */
 	private $subscriptions;
 
 	public function __construct()
@@ -28,7 +28,7 @@ final class MessageBus implements DispatchesMessages
 	{
 		$subscribers = $this->getSubscribersForChannel( $message->getChannel() );
 
-		/** @var SubscribesToMessages $subscriber */
+		/** @var SubscribesToChannel $subscriber */
 		foreach ( $subscribers as $subscriber )
 		{
 			$subscriber->notify( $message );
@@ -36,26 +36,16 @@ final class MessageBus implements DispatchesMessages
 	}
 
 	/**
-	 * @param Channel $channel
+	 * @param IdentifiesChannel $channel
 	 *
-	 * @return array|SubscribesToMessages[]
+	 * @return array|SubscribesToChannel[]
 	 */
-	private function getSubscribersForChannel( Channel $channel ) : array
+	private function getSubscribersForChannel( IdentifiesChannel $channel ) : array
 	{
-		$subscribers = [ ];
-
-		foreach ( $this->subscriptions as $subscriptionChannel => $msgSubscribers )
-		{
-			if ( $channel->equalsString( $subscriptionChannel ) )
-			{
-				$subscribers = array_merge( $subscribers, $msgSubscribers );
-			}
-		}
-
-		return $subscribers;
+		return $this->subscriptions[ $channel->toString() ] ?? [ ];
 	}
 
-	public function subscribe( Channel $channel, SubscribesToMessages $subscriber )
+	public function subscribe( IdentifiesChannel $channel, SubscribesToChannel $subscriber )
 	{
 		$key = $channel->toString();
 

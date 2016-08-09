@@ -5,27 +5,27 @@
 
 namespace IceHawk\PubSub\Types;
 
-use IceHawk\PubSub\Interfaces\IdentifiesMessage;
+use IceHawk\PubSub\Interfaces\NamesMessage;
 use IceHawk\PubSub\Traits\StringRepresenting;
 
 /**
- * Class MessageId
+ * Class MessageName
  * @package IceHawk\PubSub\Types
  */
-final class MessageId implements IdentifiesMessage
+final class MessageName implements NamesMessage
 {
 	use StringRepresenting;
 
 	/** @var string */
-	private $messageId;
+	private $messageName;
 
-	public function __construct( string $messageId )
+	public function __construct( string $messageName )
 	{
-		$this->messageId = $messageId;
+		$this->messageName = $messageName;
 	}
 
 	public function toString() : string
 	{
-		return $this->messageId;
+		return $this->messageName;
 	}
 }

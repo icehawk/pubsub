@@ -5,16 +5,16 @@
 
 namespace IceHawk\PubSub\Types;
 
-use IceHawk\PubSub\Interfaces\RepresentsValueAsString;
-use IceHawk\PubSub\Traits\Scalarizing;
+use IceHawk\PubSub\Interfaces\IdentifiesChannel;
+use IceHawk\PubSub\Traits\StringRepresenting;
 
 /**
  * Class Channel
  * @package IceHawk\PubSub\Types
  */
-final class Channel implements RepresentsValueAsString
+final class Channel implements IdentifiesChannel
 {
-	use Scalarizing;
+	use StringRepresenting;
 
 	/** @var string */
 	private $channel;
@@ -27,10 +27,5 @@ final class Channel implements RepresentsValueAsString
 	public function toString() : string
 	{
 		return $this->channel;
-	}
-
-	public function equalsString( string $other ) : bool
-	{
-		return ($other == $this->toString());
 	}
 }

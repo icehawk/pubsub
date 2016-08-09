@@ -6,10 +6,10 @@
 namespace IceHawk\PubSub\Interfaces;
 
 /**
- * Interface SubscribesToMessages
+ * Interface SubscribesToChannel
  * @package IceHawk\PubSub\Interfaces
  */
-interface SubscribesToMessages
+interface SubscribesToChannel
 {
 	public function notify( CarriesInformation $message );
 }

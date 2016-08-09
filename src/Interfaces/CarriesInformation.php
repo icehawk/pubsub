@@ -5,16 +5,15 @@
 
 namespace IceHawk\PubSub\Interfaces;
 
-use IceHawk\PubSub\Types\Channel;
-use IceHawk\PubSub\Types\MessageId;
-
 /**
  * Interface CarriesInformation
  * @package IceHawk\PubSub\Interfaces
  */
 interface CarriesInformation
 {
-	public function getMessageId() : MessageId;
+	public function getMessageId() : IdentifiesMessage;
 
-	public function getChannel() : Channel;
+	public function getMessageName() : NamesMessage;
+
+	public function getChannel() : IdentifiesChannel;
 }

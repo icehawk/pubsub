@@ -6,10 +6,10 @@
 namespace IceHawk\PubSub\Traits;
 
 /**
- * Trait Scalarizing
+ * Trait StringRepresenting
  * @package IceHawk\PubSub\Traits
  */
-trait Scalarizing
+trait StringRepresenting
 {
 	abstract public function toString() : string;
 
