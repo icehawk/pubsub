@@ -20,7 +20,7 @@ script:
  - php vendor/bin/phpunit -c build/
 
 after_success:
- - travis_retry php vendor/bin/coveralls -c ./.coveralls.yml -v --exclude-no-stmt --root_dir ./
+ - travis_retry php vendor/bin/coveralls -v --exclude-no-stmt
 
 notifications:
   slack: fortunesolutions:PoLjMJuARdFicBIEPzdNrZ96

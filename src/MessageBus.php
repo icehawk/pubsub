@@ -51,7 +51,7 @@ final class MessageBus implements DispatchesMessages
 
 		if ( isset($this->subscriptions[ $key ]) )
 		{
-			if ( !in_array( $subscriber, $this->subscriptions[ $key ], true ) )
+			if ( !in_array( $subscriber, $this->subscriptions[ $key ] ) )
 			{
 				$this->subscriptions[ $key ][] = $subscriber;
 			}
