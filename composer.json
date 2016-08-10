@@ -1,5 +1,5 @@
 {
-	"name": "icehawk/pub-sub",
+	"name": "icehawk/pubsub",
 	"description": "Publish subscribe component for IceHawk framework",
 	"minimum-stability": "dev",
 	"prefer-stable": true,
