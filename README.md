@@ -9,6 +9,12 @@
 
 Publish-Subscribe component for IceHawk framework
 
+## Installation
+
+```
+composer require "icehawk/pubsub"
+```
+
 ## Usage
 
 ### Create a message
