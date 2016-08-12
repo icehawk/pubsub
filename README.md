@@ -12,7 +12,7 @@ Publish-Subscribe component for IceHawk framework
 ## Installation
 
 ```
-composer require "icehawk/pubsub"
+composer require "icehawk/pubsub^1.0"
 ```
 
 ## Usage
