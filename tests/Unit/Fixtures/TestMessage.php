@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 /**
  * @author hollodotme
  */
@@ -6,12 +6,8 @@
 namespace IceHawk\PubSub\Tests\Unit\Fixtures;
 
 use IceHawk\PubSub\Interfaces\CarriesInformation;
-use IceHawk\PubSub\Interfaces\IdentifiesChannel;
 use IceHawk\PubSub\Interfaces\IdentifiesMessage;
 use IceHawk\PubSub\Interfaces\NamesMessage;
-use IceHawk\PubSub\Types\Channel;
-use IceHawk\PubSub\Types\MessageId;
-use IceHawk\PubSub\Types\MessageName;
 
 /**
  * Class TestMessage
@@ -19,31 +15,43 @@ use IceHawk\PubSub\Types\MessageName;
  */
 class TestMessage implements CarriesInformation
 {
-	/** @var string */
-	private $messageText;
+    /** @var IdentifiesMessage */
+    private $messageId;
 
-	public function __construct( string $messageText )
-	{
-		$this->messageText = $messageText;
-	}
+    /** @var NamesMessage */
+    private $messageName;
 
-	public function getMessageId() : IdentifiesMessage
-	{
-		return new MessageId( 'unit-test-id' );
-	}
+    /** @var string */
+    private $messageText;
 
-	public function getMessageName() : NamesMessage
-	{
-		return new MessageName( 'TestMessage' );
-	}
+    /**
+     * @param IdentifiesMessage $messageId
+     * @param NamesMessage      $messageName
+     * @param string            $messageText
+     */
+    public function __construct(
+        IdentifiesMessage $messageId,
+        NamesMessage $messageName,
+        $messageText
+    )
+    {
+        $this->messageId   = $messageId;
+        $this->messageName = $messageName;
+        $this->messageText = $messageText;
+    }
 
-	public function getChannel() : IdentifiesChannel
-	{
-		return new Channel( 'unit-test' );
-	}
+    public function getMessageId() : IdentifiesMessage
+    {
+        return $this->messageId;
+    }
 
-	public function getMessageText() : string
-	{
-		return $this->messageText;
-	}
+    public function getMessageName() : NamesMessage
+    {
+        return $this->messageName;
+    }
+
+    public function getMessageText() : string
+    {
+        return $this->messageText;
+    }
 }

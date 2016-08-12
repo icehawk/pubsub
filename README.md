@@ -7,7 +7,7 @@
 
 # IceHawk\PubSub
 
-Publish subscribe component for IceHawk framework
+Publish-Subscribe component for IceHawk framework
 
 ## Usage
 
@@ -16,10 +16,25 @@ Publish subscribe component for IceHawk framework
 **Please note:** 
 
 * Messages should always be immutable.
-* Every message must have a:
+* Every message MUST have a:
   * Message ID
   * Message name
-  * Channel
+  
+... and of course user-defined content, so called payload. 
+
+IceHawk/PubSub shipps with 2 types/value objects for the message ID and message name.
+If you don't want / can't use them for any reason, you can alternativly implement their interfaces.
+ 
+| Shipped type / value object          | Interface                                     |
+|--------------------------------------|-----------------------------------------------|
+| `IceHawk\PubSub\Types\MessageId`     | `IceHawk\PubSub\Interfaces\IdentifiesMessage` |
+| `IceHawk\PubSub\Types\MessageName`   | `IceHawk\PubSub\Interfaces\NamesMessage`      |
+
+The message itself MUST implement the following interface:
+
+`IceHawk\PubSub\Interfaces\CarriesInformation`
+
+So a message implementation could look like this:
 
 ```php
 <?php
@@ -27,25 +42,25 @@ Publish subscribe component for IceHawk framework
 namespace MyVendor\MyNamespace;
 
 use IceHawk\PubSub\Interfaces\CarriesInformation;
-use IceHawk\PubSub\Interfaces\IdentifiesChannel;
 use IceHawk\PubSub\Interfaces\IdentifiesMessage;
 use IceHawk\PubSub\Interfaces\NamesMessage;
-use IceHawk\PubSub\Types\Channel;
-use IceHawk\PubSub\Types\MessageId;
-use IceHawk\PubSub\Types\MessageName;
 
 final class MyMessage implements CarriesInformation
 {
-	/** @var MessageId */
+	/** @var IdentifiesMessage */
 	private $messageId;
 	
-	/** @var string */
-	private $message;
+	/** @var NamesMessage */
+	private $messageName;
 	
-	public function __construct(MessageId $messageId, string $message) 
+	/** @var string */
+	private $content;
+	
+	public function __construct( IdentifiesMessage $messageId, NamesMessage $messageName, string $content ) 
 	{
-		$this->messageId = $messageId;
-		$this->message = $message;
+		$this->messageId    = $messageId;
+		$this->messageName  = $messageName;
+		$this->content      = $content;
 	}
 	
 	public function getMessageId() : IdentifiesMessage 
@@ -55,46 +70,87 @@ final class MyMessage implements CarriesInformation
 	
 	public function getMessageName() : NamesMessage 
 	{
-        return new MessageName('Something happened');
+        return $this->messageName;
 	}
 	
-	public function getChannel() : IdentifiesChannel 
+	public function getContent() : string
 	{
-		return new Channel('ListenToMe');
-	}
-	
-	public function getMessage() : string
-	{
-		return $this->message;
+		return $this->content;
 	}
 }
 ```
 
-### Create a message subscriber
-
-**Note:** The `AbstractChannelSubscriber` automatically converts the message name to a method name by prefixing `when` to the message name, that is converted to upper camel case.
-In this example: Message name "Something happened" becomes method name "whenSomethingHappened".
-
-As the call to the method is triggered by the abstract parent class, the method must at least have protected (or public) visibility. 
-Private methods would not be callable, because they would be out of scope.
+And a new instance of this message is created like this:
 
 ```php
 <?php
 
 namespace MyVendor\MyNamespace;
 
-use IceHawk\PubSub\AbstractChannelSubscriber;
+use IceHawk\PubSub\Types\MessageId;
+use IceHawk\PubSub\Types\MessageName;
 
-final class MyMessageSubscriber extends AbstractChannelSubscriber
+$myMessage = new MyMessage( 
+    new MessageId( '123456-ABC-789' ),
+    new MessageName( 'Something had happened' ),
+    'Hello World!' 
+);
+```
+
+### Create a message subscriber
+
+To implement a subscriber that gets notified about all messages published to the channel it is subscribing to, 
+you can extend the `AbstractMessageSubscriber` class that is shipped with IceHawk\PubSub.
+
+The `AbstractMessageSubscriber` class automatically converts the message name to a handler method name by prefixing `when` to the message name, 
+which is converted to upper camelcase. (All non-alphanumeric characters are removed.)
+In this example: The message name "Something had happened" becomes the handler method name "whenSomethingHadHappened".
+
+As the invocation to the handler method is triggered by the abstract parent class, the method must at least have protected (or public) visibility. 
+Private methods would not be callable, because they would be out of the parent class' scope.
+
+The handler methods gets invoked with 2 parameters:
+
+1. The published message instance
+2. The channel instance the message was published on
+
+IceHawk\PubSub shipps with a type/value object for channels.
+If you don't want / can't use it for any reason, you can alternativly implement its interfaces.
+ 
+| Shipped type / value object          | Interface                                     |
+|--------------------------------------|-----------------------------------------------|
+| `IceHawk\PubSub\Types\Channel`       | `IceHawk\PubSub\Interfaces\IdentifiesChannel` |
+
+The alternative to extend the `AbstractMessageSubscriber` class is to implement the following interface:
+
+`IceHawk\PubSub\Interfaces\SubscribesToMessages`
+
+A basic implementation of a subscriber, being notified about the previously created message, could look like this:
+
+```php
+<?php
+
+namespace MyVendor\MyNamespace;
+
+use IceHawk\PubSub\AbstractMessageSubscriber;
+use IceHawk\PubSub\Types\Channel;
+
+final class MySubscriber extends AbstractMessageSubscriber
 {
-	protected function whenSomethingHappened(MyMessage $myMessage)
+	protected function whenSomethingHadHappened( MyMessage $myMessage, Channel $channel )
 	{
-		echo $myMessage->getMessage();
+		printf(
+		    'Message named "%s" with ID "%s" was published on channel "%" with content: "%s"',
+		    $myMessage->getMessageName(),
+		    $myMessage->getMessageId(),
+		    $channel,
+		    $myMessage->getContent()
+		);
 	}
 }
 ```
 
-### Subscribe to messages
+### Subscribe to a channel
 
 ```php
 <?php
@@ -107,29 +163,32 @@ use IceHawk\PubSub\Types\Channel;
 // ...
 
 $messageBus = new MessageBus();
-$messageBus->subscribe(new Channel('ListenToMe'), new MyMessageSubscriber());
+$messageBus->subscribe( new Channel( 'ListenToMe' ), new MySubscriber() );
 
 ```
 
+**Note:** The `MessageBus` class automatically prevents subscribing of equal subscribers to the same channel. 
+But one subscriber can subscribe to multiple channels.
+
 ### Publish a message
+
+In the same way you subscribe to a channel, you will publish a message to a channel like this:
 
 ```php
 <?php
 
 namespace MyVendor\MyNamespace;
 
-use IceHawk\PubSub\Types\MessageId;
+use IceHawk\PubSub\Types\Channel;
 
 // ...
 
-$message = new MyMessage(new MessageId('Identifier'), 'Hello World!');
-
-$messageBus->publish($message);
+$messageBus->publish( new Channel('ListenToMe'), $message );
 
 ```
 
 **Prints:**
 
 ```
-Hello World!
+Message named "Something had happened" with ID "123456-ABC-789" was published on channel "ListenToMe" with content: "Hello World!"'
 ```

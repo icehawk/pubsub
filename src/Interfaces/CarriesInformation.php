@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 /**
  * @author hollodotme
  */
@@ -14,6 +14,4 @@ interface CarriesInformation
 	public function getMessageId() : IdentifiesMessage;
 
 	public function getMessageName() : NamesMessage;
-
-	public function getChannel() : IdentifiesChannel;
 }

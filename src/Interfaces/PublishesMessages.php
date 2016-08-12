@@ -11,5 +11,5 @@ namespace IceHawk\PubSub\Interfaces;
  */
 interface PublishesMessages
 {
-	public function publish( CarriesInformation $message );
+    public function publish( IdentifiesChannel $channel, CarriesInformation $message );
 }

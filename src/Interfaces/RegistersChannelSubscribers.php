@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 /**
  * @author hollodotme
  */
@@ -11,5 +11,5 @@ namespace IceHawk\PubSub\Interfaces;
  */
 interface RegistersChannelSubscribers
 {
-	public function subscribe( IdentifiesChannel $channel, SubscribesToChannel $subscriber );
+    public function subscribe( IdentifiesChannel $channel, SubscribesToMessages $subscriber );
 }

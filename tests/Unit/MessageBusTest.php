@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 /**
  * @author hollodotme
  */
@@ -6,36 +6,53 @@
 namespace IceHawk\PubSub\Tests\Unit;
 
 use IceHawk\PubSub\MessageBus;
-use IceHawk\PubSub\Tests\Unit\Fixtures\TestChannelSubscriber;
 use IceHawk\PubSub\Tests\Unit\Fixtures\TestMessage;
+use IceHawk\PubSub\Tests\Unit\Fixtures\TestMessageSubscriber;
+use IceHawk\PubSub\Types\Channel;
+use IceHawk\PubSub\Types\MessageId;
+use IceHawk\PubSub\Types\MessageName;
 
 class MessageBusTest extends \PHPUnit_Framework_TestCase
 {
-	public function testCanPublishMessages()
-	{
-		$messageBus            = new MessageBus();
-		$testChannelSubscriber = new TestChannelSubscriber();
-		$testMessage           = new TestMessage( 'Can publish messages' );
+    public function testCanPublishMessages()
+    {
+        $messageBus            = new MessageBus();
+        $testChannelSubscriber = new TestMessageSubscriber();
 
-		$messageBus->subscribe( $testMessage->getChannel(), $testChannelSubscriber );
+        $messageId   = new MessageId( 'Unit-Test-ID' );
+        $messageName = new MessageName( 'Test message was published' );
+        $channel     = new Channel( 'UnitTestChannel' );
+        $testMessage = new TestMessage( $messageId, $messageName, 'Can publish messages' );
 
-		$this->expectOutputString( 'Can publish messages' );
+        $messageBus->subscribe( $channel, $testChannelSubscriber );
 
-		$messageBus->publish( $testMessage );
-	}
+        $this->expectOutputString(
+            'Message named "Test message was published" with ID "Unit-Test-ID" was published on '
+            . 'channel "UnitTestChannel" with text "Can publish messages"'
+        );
 
-	public function testSubscribersWereAddedOnlyOnceForChannel()
-	{
-		$messageBus             = new MessageBus();
-		$testChannelSubscriber1 = new TestChannelSubscriber();
-		$testChannelSubscriber2 = new TestChannelSubscriber();
-		$testMessage            = new TestMessage( 'Can add only one subscriber for channel' );
+        $messageBus->publish( $channel, $testMessage );
+    }
 
-		$messageBus->subscribe( $testMessage->getChannel(), $testChannelSubscriber1 );
-		$messageBus->subscribe( $testMessage->getChannel(), $testChannelSubscriber2 );
+    public function testSubscribersWereAddedOnlyOnceForChannel()
+    {
+        $messageBus             = new MessageBus();
+        $testChannelSubscriber1 = new TestMessageSubscriber();
+        $testChannelSubscriber2 = new TestMessageSubscriber();
 
-		$this->expectOutputString( 'Can add only one subscriber for channel' );
+        $messageId   = new MessageId( 'Unit-Test-ID' );
+        $messageName = new MessageName( 'Test message was published' );
+        $channel     = new Channel( 'UnitTestChannel' );
+        $testMessage = new TestMessage( $messageId, $messageName, 'Can add only one subscriber for channel' );
 
-		$messageBus->publish( $testMessage );
-	}
+        $messageBus->subscribe( $channel, $testChannelSubscriber1 );
+        $messageBus->subscribe( $channel, $testChannelSubscriber2 );
+
+        $this->expectOutputString(
+            'Message named "Test message was published" with ID "Unit-Test-ID" was published on '
+            . 'channel "UnitTestChannel" with text "Can add only one subscriber for channel"'
+        );
+
+        $messageBus->publish( $channel, $testMessage );
+    }
 }
