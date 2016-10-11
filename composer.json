@@ -39,7 +39,7 @@
 				"only-dev": true
 			},
 			"phpmetrics": {
-				"url": "https://github.com/phpmetrics/PhpMetrics/raw/master/build/phpmetrics.phar",
+				"url": "https://github.com/phpmetrics/PhpMetrics/releases/download/v2.0.0-rc/phpmetrics.phar",
 				"only-dev": true
 			},
 			"phpdox": {
