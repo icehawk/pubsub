@@ -35,19 +35,23 @@
 	"extra": {
 		"tools": {
 			"phpunit": {
-				"url": "https://phar.phpunit.de/phpunit.phar",
+				"url": "https://phar.phpunit.de/phpunit-7.phar",
 				"only-dev": true
 			},
 			"phpmetrics": {
-				"url": "https://github.com/phpmetrics/PhpMetrics/raw/master/build/phpmetrics.phar",
+				"url": "https://github.com/phpmetrics/PhpMetrics/releases/download/v2.4.1/phpmetrics.phar",
 				"only-dev": true
 			},
 			"phpdox": {
-				"url": "https://github.com/theseer/phpdox/releases/download/0.8.1.1/phpdox-0.8.1.1.phar",
+				"url": "https://github.com/theseer/phpdox/releases/download/0.11.2/phpdox-0.11.2.phar",
 				"only-dev": true
 			},
 			"coveralls": {
-				"url": "https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar",
+				"url": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar",
+				"only-dev": true
+			},
+			"phpstan": {
+				"url": "https://github.com/phpstan/phpstan/releases/download/0.10.5/phpstan.phar",
 				"only-dev": true
 			}
 		}
