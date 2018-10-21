@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2016 Holger Woltersdorf & Contributors
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,6 +17,7 @@ use IceHawk\PubSub\Interfaces\CarriesInformation;
 use IceHawk\PubSub\Interfaces\DispatchesMessages;
 use IceHawk\PubSub\Interfaces\IdentifiesChannel;
 use IceHawk\PubSub\Interfaces\SubscribesToMessages;
+use function in_array;
 
 /**
  * Class MessageBus
@@ -57,9 +58,9 @@ final class MessageBus implements DispatchesMessages
 	{
 		$key = $channel->toString();
 
-		if ( isset($this->subscriptions[ $key ]) )
+		if ( isset( $this->subscriptions[ $key ] ) )
 		{
-			if ( !in_array( $subscriber, $this->subscriptions[ $key ] ) )
+			if ( !in_array( $subscriber, $this->subscriptions[ $key ], false ) )
 			{
 				$this->subscriptions[ $key ][] = $subscriber;
 			}
