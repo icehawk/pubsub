@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2016 Holger Woltersdorf & Contributors
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,6 +17,8 @@ use IceHawk\PubSub\Interfaces\CarriesInformation;
 use IceHawk\PubSub\Interfaces\IdentifiesChannel;
 use IceHawk\PubSub\Interfaces\NamesMessage;
 use IceHawk\PubSub\Interfaces\SubscribesToMessages;
+use function is_callable;
+use function is_string;
 
 /**
  * Class AbstractMessageSubscriber
@@ -30,23 +32,33 @@ abstract class AbstractMessageSubscriber implements SubscribesToMessages
 
 		if ( is_callable( [$this, $methodName] ) )
 		{
-			call_user_func( [$this, $methodName], $message, $channel );
+			$this->$methodName( $message, $channel );
 		}
 	}
 
 	private function getHandlerMethodName( NamesMessage $messageName ) : string
 	{
-		$channelName = preg_replace_callback(
-			"#_([a-z])#i",
+		$messageNameClean = preg_replace( ['#[^a-z]#i', '#_+#'], '_', $messageName->toString() );
+
+		if ( !is_string( $messageNameClean ) )
+		{
+			$messageNameClean = $messageName->toString();
+		}
+
+		$handlerMethodName = preg_replace_callback(
+			'#_([a-z])#i',
 			function ( array $matches ) : string
 			{
 				return strtoupper( $matches[1] );
 			},
-			preg_replace( ['#[^a-z]#i', '#_+#'], '_', $messageName )
+			$messageNameClean
 		);
 
-		$methodName = 'when' . ucfirst( $channelName );
+		if ( !is_string( $handlerMethodName ) )
+		{
+			$handlerMethodName = $messageNameClean;
+		}
 
-		return $methodName;
+		return 'when' . ucfirst( $handlerMethodName );
 	}
 }

@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2016 Holger Woltersdorf & Contributors
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -14,16 +14,21 @@
 namespace IceHawk\PubSub\Tests\Unit\Traits;
 
 use IceHawk\PubSub\Tests\Unit\Fixtures\StringValueObject;
+use PHPUnit\Framework\TestCase;
+use function json_encode;
 
-class StringRepresentingTest extends \PHPUnit_Framework_TestCase
+class StringRepresentingTest extends TestCase
 {
-    public function testCanGetObjectAsString()
-    {
-        $valueObject = new StringValueObject( 'Unit-Test' );
+	/**
+	 * @throws \PHPUnit\Framework\ExpectationFailedException
+	 * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+	 */
+	public function testCanGetObjectAsString()
+	{
+		$valueObject = new StringValueObject( 'Unit-Test' );
 
-        $this->assertEquals( 'Unit-Test', $valueObject->toString() );
-        $this->assertEquals( 'Unit-Test', (string)$valueObject );
-        $this->assertEquals( 'Unit-Test', strval( $valueObject ) );
-        $this->assertEquals( '"Unit-Test"', json_encode( $valueObject ) );
-    }
+		$this->assertEquals( 'Unit-Test', $valueObject->toString() );
+		$this->assertEquals( 'Unit-Test', (string)$valueObject );
+		$this->assertEquals( '"Unit-Test"', json_encode( $valueObject ) );
+	}
 }
